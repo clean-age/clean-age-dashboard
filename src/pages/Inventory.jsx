@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { ChevronDown } from 'lucide-react';
 import CollapsibleSection from '../components/CollapsibleSection';
 import { useDashboard } from '../context/DashboardContext';
 
@@ -14,6 +15,80 @@ function matchProducts(caCincyProduct, fbaList) {
 
 function getNextRuns(product, productionList) {
   return productionList.filter((p) => p.itemDescription === product);
+}
+
+function DCBlock({ dcName, items }) {
+  const [open, setOpen] = useState(false);
+
+  const dcByCategory = {};
+  items.forEach((item) => {
+    const category = item.category || 'Uncategorized';
+    if (!dcByCategory[category]) dcByCategory[category] = [];
+    dcByCategory[category].push(item);
+  });
+
+  const dcTotal = items.reduce((sum, item) => sum + (item.oh || 0) + (item.oo || 0), 0);
+
+  return (
+    <div className="border border-slate-200 rounded-lg overflow-hidden">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full bg-slate-50 px-4 py-3 flex items-center justify-between hover:bg-slate-100 transition-colors"
+      >
+        <p className="font-semibold text-slate-900 text-sm">
+          {dcName} - Total: {dcTotal.toLocaleString()}
+        </p>
+        <ChevronDown
+          className={`text-slate-400 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+          size={16}
+        />
+      </button>
+      {open && (
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-slate-200">
+                <th className="text-left py-2 px-3 font-semibold text-slate-700">Product</th>
+                <th className="text-right py-2 px-3 font-semibold text-slate-700">OH</th>
+                <th className="text-right py-2 px-3 font-semibold text-slate-700">OO</th>
+                <th className="text-right py-2 px-3 font-semibold text-slate-700">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {Object.entries(dcByCategory).map(([category, products]) => (
+                <React.Fragment key={category}>
+                  <tr className="bg-blue-50">
+                    <td colSpan="4" className="py-1.5 px-3">
+                      <p className="text-xs font-semibold text-blue-700 uppercase tracking-wider">
+                        {category}
+                      </p>
+                    </td>
+                  </tr>
+                  {products.map((product, idx) => (
+                    <tr
+                      key={idx}
+                      className="border-b border-slate-100 hover:bg-slate-50 transition-colors"
+                    >
+                      <td className="py-2 px-3 text-slate-900 text-xs">{product.product}</td>
+                      <td className="py-2 px-3 text-right text-slate-600 text-xs">
+                        {(product.oh || 0).toLocaleString()}
+                      </td>
+                      <td className="py-2 px-3 text-right text-slate-600 text-xs">
+                        {(product.oo || 0).toLocaleString()}
+                      </td>
+                      <td className="py-2 px-3 text-right font-medium text-slate-900 text-xs">
+                        {((product.oh || 0) + (product.oo || 0)).toLocaleString()}
+                      </td>
+                    </tr>
+                  ))}
+                </React.Fragment>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default function Inventory() {
@@ -138,71 +213,10 @@ export default function Inventory() {
 
       <CollapsibleSection title="KeHE DC Inventory" defaultOpen={false}>
         {dcByDistributor['KeHE'] ? (
-          <div className="space-y-4">
-            {Object.entries(dcByDistributor['KeHE']).map(([dcName, items]) => {
-              const dcByCategory = {};
-              items.forEach((item) => {
-                const category = item.category || 'Uncategorized';
-                if (!dcByCategory[category]) {
-                  dcByCategory[category] = [];
-                }
-                dcByCategory[category].push(item);
-              });
-
-              const dcTotal = items.reduce((sum, item) => sum + (item.oh || 0) + (item.oo || 0), 0);
-
-              return (
-                <div key={dcName} className="border border-slate-200 rounded-lg">
-                  <div className="bg-slate-50 px-4 py-3 border-b border-slate-200">
-                    <p className="font-semibold text-slate-900">
-                      {dcName} - Total: {dcTotal.toLocaleString()}
-                    </p>
-                  </div>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr className="border-b border-slate-200">
-                          <th className="text-left py-2 px-3 font-semibold text-slate-700">Product</th>
-                          <th className="text-right py-2 px-3 font-semibold text-slate-700">OH</th>
-                          <th className="text-right py-2 px-3 font-semibold text-slate-700">OO</th>
-                          <th className="text-right py-2 px-3 font-semibold text-slate-700">Total</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {Object.entries(dcByCategory).map(([category, products]) => (
-                          <React.Fragment key={category}>
-                            <tr className="bg-blue-50">
-                              <td colSpan="4" className="py-1.5 px-3">
-                                <p className="text-xs font-semibold text-blue-700 uppercase tracking-wider">
-                                  {category}
-                                </p>
-                              </td>
-                            </tr>
-                            {products.map((product, idx) => (
-                              <tr
-                                key={idx}
-                                className="border-b border-slate-100 hover:bg-slate-50 transition-colors"
-                              >
-                                <td className="py-2 px-3 text-slate-900 text-xs">{product.product}</td>
-                                <td className="py-2 px-3 text-right text-slate-600 text-xs">
-                                  {(product.oh || 0).toLocaleString()}
-                                </td>
-                                <td className="py-2 px-3 text-right text-slate-600 text-xs">
-                                  {(product.oo || 0).toLocaleString()}
-                                </td>
-                                <td className="py-2 px-3 text-right font-medium text-slate-900 text-xs">
-                                  {((product.oh || 0) + (product.oo || 0)).toLocaleString()}
-                                </td>
-                              </tr>
-                            ))}
-                          </React.Fragment>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              );
-            })}
+          <div className="space-y-3">
+            {Object.entries(dcByDistributor['KeHE']).map(([dcName, items]) => (
+              <DCBlock key={dcName} dcName={dcName} items={items} />
+            ))}
           </div>
         ) : (
           <p className="text-slate-500">No KeHE inventory data available</p>
@@ -211,71 +225,10 @@ export default function Inventory() {
 
       <CollapsibleSection title="UNFI DC Inventory" defaultOpen={false}>
         {dcByDistributor['UNFI'] ? (
-          <div className="space-y-4">
-            {Object.entries(dcByDistributor['UNFI']).map(([dcName, items]) => {
-              const dcByCategory = {};
-              items.forEach((item) => {
-                const category = item.category || 'Uncategorized';
-                if (!dcByCategory[category]) {
-                  dcByCategory[category] = [];
-                }
-                dcByCategory[category].push(item);
-              });
-
-              const dcTotal = items.reduce((sum, item) => sum + (item.oh || 0) + (item.oo || 0), 0);
-
-              return (
-                <div key={dcName} className="border border-slate-200 rounded-lg">
-                  <div className="bg-slate-50 px-4 py-3 border-b border-slate-200">
-                    <p className="font-semibold text-slate-900">
-                      {dcName} - Total: {dcTotal.toLocaleString()}
-                    </p>
-                  </div>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr className="border-b border-slate-200">
-                          <th className="text-left py-2 px-3 font-semibold text-slate-700">Product</th>
-                          <th className="text-right py-2 px-3 font-semibold text-slate-700">OH</th>
-                          <th className="text-right py-2 px-3 font-semibold text-slate-700">OO</th>
-                          <th className="text-right py-2 px-3 font-semibold text-slate-700">Total</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {Object.entries(dcByCategory).map(([category, products]) => (
-                          <React.Fragment key={category}>
-                            <tr className="bg-blue-50">
-                              <td colSpan="4" className="py-1.5 px-3">
-                                <p className="text-xs font-semibold text-blue-700 uppercase tracking-wider">
-                                  {category}
-                                </p>
-                              </td>
-                            </tr>
-                            {products.map((product, idx) => (
-                              <tr
-                                key={idx}
-                                className="border-b border-slate-100 hover:bg-slate-50 transition-colors"
-                              >
-                                <td className="py-2 px-3 text-slate-900 text-xs">{product.product}</td>
-                                <td className="py-2 px-3 text-right text-slate-600 text-xs">
-                                  {(product.oh || 0).toLocaleString()}
-                                </td>
-                                <td className="py-2 px-3 text-right text-slate-600 text-xs">
-                                  {(product.oo || 0).toLocaleString()}
-                                </td>
-                                <td className="py-2 px-3 text-right font-medium text-slate-900 text-xs">
-                                  {((product.oh || 0) + (product.oo || 0)).toLocaleString()}
-                                </td>
-                              </tr>
-                            ))}
-                          </React.Fragment>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              );
-            })}
+          <div className="space-y-3">
+            {Object.entries(dcByDistributor['UNFI']).map(([dcName, items]) => (
+              <DCBlock key={dcName} dcName={dcName} items={items} />
+            ))}
           </div>
         ) : (
           <p className="text-slate-500">No UNFI inventory data available</p>

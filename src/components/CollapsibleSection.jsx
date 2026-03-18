@@ -27,16 +27,13 @@ export default function CollapsibleSection({
         />
       </button>
 
-      <div
-        className={`overflow-hidden transition-all duration-200`}
-        style={{
-          maxHeight: isOpen ? '1000px' : '0px',
-        }}
-      >
-        <div className="px-6 py-4 border-t border-slate-200">
-          {children}
+      {isOpen && (
+        <div className="border-t border-slate-200">
+          <div className="px-6 py-4 max-h-[32rem] overflow-y-auto">
+            {children}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
