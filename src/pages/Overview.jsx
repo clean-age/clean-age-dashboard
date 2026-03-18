@@ -1,3 +1,4 @@
+import React from 'react';
 import KpiRow from '../components/KpiRow';
 import { useDashboard } from '../context/DashboardContext';
 
@@ -84,7 +85,7 @@ export default function Overview() {
               </thead>
               <tbody>
                 {Object.entries(productsByCategory).map(([category, products]) => (
-                  <tbody key={category}>
+                  <React.Fragment key={category}>
                     <tr className="bg-blue-50">
                       <td colSpan="4" className="py-2 px-3">
                         <p className="text-xs font-semibold text-blue-700 uppercase tracking-wider">
@@ -109,7 +110,7 @@ export default function Overview() {
                         </td>
                       </tr>
                     ))}
-                  </tbody>
+                  </React.Fragment>
                 ))}
               </tbody>
             </table>

@@ -1,3 +1,4 @@
+import React from 'react';
 import CollapsibleSection from '../components/CollapsibleSection';
 import { useDashboard } from '../context/DashboardContext';
 
@@ -81,7 +82,7 @@ export default function Inventory() {
             </thead>
             <tbody>
               {Object.entries(caCincyByCategory).map(([category, products]) => (
-                <tbody key={category}>
+                <React.Fragment key={category}>
                   <tr className="bg-blue-50">
                     <td colSpan="6" className="py-2 px-3">
                       <p className="text-xs font-semibold text-blue-700 uppercase tracking-wider">
@@ -128,7 +129,7 @@ export default function Inventory() {
                       </tr>
                     );
                   })}
-                </tbody>
+                </React.Fragment>
               ))}
             </tbody>
           </table>
@@ -169,7 +170,7 @@ export default function Inventory() {
                       </thead>
                       <tbody>
                         {Object.entries(dcByCategory).map(([category, products]) => (
-                          <tbody key={category}>
+                          <React.Fragment key={category}>
                             <tr className="bg-blue-50">
                               <td colSpan="4" className="py-1.5 px-3">
                                 <p className="text-xs font-semibold text-blue-700 uppercase tracking-wider">
@@ -194,7 +195,7 @@ export default function Inventory() {
                                 </td>
                               </tr>
                             ))}
-                          </tbody>
+                          </React.Fragment>
                         ))}
                       </tbody>
                     </table>
@@ -242,7 +243,7 @@ export default function Inventory() {
                       </thead>
                       <tbody>
                         {Object.entries(dcByCategory).map(([category, products]) => (
-                          <tbody key={category}>
+                          <React.Fragment key={category}>
                             <tr className="bg-blue-50">
                               <td colSpan="4" className="py-1.5 px-3">
                                 <p className="text-xs font-semibold text-blue-700 uppercase tracking-wider">
@@ -267,7 +268,7 @@ export default function Inventory() {
                                 </td>
                               </tr>
                             ))}
-                          </tbody>
+                          </React.Fragment>
                         ))}
                       </tbody>
                     </table>
