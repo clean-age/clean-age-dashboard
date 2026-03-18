@@ -80,14 +80,17 @@ function normalizeData(raw) {
     oo: num(item.oo),
   }));
 
-  // Production
+  // Production: API returns description/readyDate/quantity,
+  // components expect itemDescription/date/qty
   const production = (d.production || []).map((item) => ({
     ...item,
-    qty: num(item.qty),
+    itemDescription: item.itemDescription || item.description,
+    date: item.date || item.readyDate,
+    qty: num(item.qty ?? item.quantity),
   }));
 
   return {
-    sales: { wow, bySource, byProduct },
+    sales: { wow, bySource, byProduct, wholesale: d.sales?.wholesale, openOrders: d.sales?.openOrders },
     caCincy,
     fba,
     dcInventory,
